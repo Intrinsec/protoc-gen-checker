@@ -1,0 +1,169 @@
+syntax = "proto3";
+
+package incident;
+
+import "validate.proto";
+import "checker/checker.proto";
+
+option go_package = "pkg/model;model";
+
+// IncidentState is the state of an Incident in the workflow
+enum IncidentState {
+  IST_UNSPECIFIED = 0;
+  ISS_STAGING = 1;
+  IST_OPEN = 2;
+  IST_CLOSED = 3;
+  IST_TRASHED = 4;
+}
+
+// IncidentStatus is a status of the incident
+enum IncidentStatus {
+  ISS_UNSPECIFIED = 0;
+  ISS_CONFIRMED = 1;
+  ISS_POTENTIAL = 2;
+  ISS_FALSE_POSITIVE = 3;
+  ISS_NON_MANAGEABLE = 4;
+}
+
+// A comment on MessageWithValidationDisabled
+// No Validation Reason: a very valid business reason for MessageWithValidationDisabled
+// Another comment on MessageWithValidationDisabled
+message MessageWithValidationDisabled {
+
+  option (validate.disabled) = true;
+  option (validate.ignored) = true;
+
+  string a_string_not_validated = 1;
+}
+
+message MessageWithValidationNOTDisabled {
+
+  option (validate.disabled) = false;
+
+  string a_string_not_validated = 1;
+}
+
+
+// No Validation Reason: a reason to ignore validation
+message MessageWithValidationIgnored {
+
+  option (validate.ignored) = true;
+
+  string a_string_not_validated = 1;
+}
+
+
+message MessageWithValidationNOTIgnored {
+
+  option (validate.ignored) = false;
+
+  string a_string_not_validated = 1;
+}
+
+message MessageWithValidationDisableOnOneField {
+
+  // No Validation Reason: a reason to ignore validation on this field
+  string a_string_not_validated = 1 [
+    (checker.disable_field_validate) = true
+  ];
+}
+
+message MessageWithFieldValidationNOTDisabled {
+
+  string a_string_not_validated = 1 [
+    (checker.disable_field_validate) = false
+  ];
+}
+
+message RawIncident {
+
+  string uuid = 1 [
+        (validate.rules).string = {
+            uuid: true,
+            ignore_empty: true,
+        }
+    ];
+
+  string name = 2 [
+        (validate.rules).string = {
+            min_len: 1,
+            max_len: 512,
+        }
+    ];
+
+  // Contains details on the incident
+  // No Validation Reason: a very valid business reason
+  // Another unelated comments
+  string description = 3 [
+    (checker.disable_field_validate) = true
+  ];
+
+  uint64 service = 4;
+
+  IncidentState state = 5 [
+        (validate.rules).enum = {
+            defined_only: true,
+        }
+    ];
+
+  IncidentStatus status = 6 [
+        (validate.rules).enum = {
+            defined_only: true,
+        }
+    ];
+
+  float base_severity = 12 [
+        (validate.rules).float = {
+            lte: 10,
+        }
+    ];
+
+  float resulting_severity = 13 [
+        (validate.rules).float = {
+            lte: 10,
+        }
+    ];
+
+  string metadata = 14 ;
+
+  string metadata_priv = 15 ;
+}
+
+message IncidentKind {
+
+  string uuid = 1 [
+        (validate.rules).string = {
+            uuid: true,
+            ignore_empty: true
+        }
+    ];
+
+  string name = 2 [
+        (validate.rules).string = {
+            pattern: "^[a-zA-Z0-9 :_-]{1,64}$",
+            ignore_empty: true
+        }
+    ];
+
+  uint32 color = 3 ;
+
+  string description = 4 ;
+}
+
+message Incident {
+
+  RawIncident raw_incident = 1 [
+        (validate.rules).message.required = true
+    ];
+
+  repeated IncidentKind incident_kinds = 2 [
+        (validate.rules).repeated.min_items = 1
+    ];
+
+  string accountable = 3 [
+        (validate.rules).string = {
+            uuid: true,
+            ignore_empty: true
+        }
+    ];
+}

@@ -1,0 +1,4 @@
+bin/
+*.sanitize
+tests/pkg/
+proto/

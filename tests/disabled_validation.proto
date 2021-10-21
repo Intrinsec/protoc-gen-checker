@@ -1,0 +1,17 @@
+// No Validation Reason: a very valid to disable the validation on the whole file
+
+syntax = "proto3";
+
+package incident;
+
+import "checker/checker.proto";
+
+option go_package = "pkg/model;model";
+
+
+option (checker.disable_file_validate) = true;
+
+
+message AMessageNotValidatedDueToFileDisabled {
+    string test = 1;
+}
