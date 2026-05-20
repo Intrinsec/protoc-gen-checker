@@ -9,6 +9,8 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      GOFLAGS: -mod=vendor
     steps:
       - uses: actions/checkout@v6
 
@@ -33,6 +35,8 @@ jobs:
           args: --timeout=5m
 
       - name: govulncheck
+        env:
+          GOFLAGS: ""
         run: |
           go install golang.org/x/vuln/cmd/govulncheck@latest
           govulncheck ./...
