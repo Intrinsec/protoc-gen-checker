@@ -1,0 +1,52 @@
+version: "2"
+run:
+  tests: false
+linters:
+  default: all
+  disable:
+    - depguard
+    - err113
+    - exhaustruct
+    - funlen
+    - gochecknoglobals
+    - gochecknoinits
+    - goconst
+    - godoclint
+    - inamedparam
+    - ireturn
+    - nilnil
+    - lll
+    - mnd
+    - nestif
+    - nolintlint
+    - tagliatelle
+    - varnamelen
+    - wsl
+    - wsl_v5
+  exclusions:
+    generated: lax
+    paths:
+      - vendor
+      - third_party
+      - ".*\\.pb\\.go$"
+      - ".*\\.pb\\.gw\\.go$"
+      - ".*_grpc\\.pb\\.go$"
+      - ".*\\.gen\\.go$"
+      - ".*_gen\\.go$"
+      - ".*\\.generated\\.go$"
+issues:
+  max-same-issues: 5
+formatters:
+  enable:
+    - gofmt
+  exclusions:
+    generated: lax
+    paths:
+      - vendor
+      - third_party
+      - ".*\\.pb\\.go$"
+      - ".*\\.pb\\.gw\\.go$"
+      - ".*_grpc\\.pb\\.go$"
+      - ".*\\.gen\\.go$"
+      - ".*_gen\\.go$"
+      - ".*\\.generated\\.go$"

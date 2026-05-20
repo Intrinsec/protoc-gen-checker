@@ -1,3 +1,4 @@
+// Package main implements the protoc-gen-checker plugin.
 package main
 
 import (
@@ -10,15 +11,16 @@ import (
 	pgsgo "github.com/lyft/protoc-gen-star/v2/lang/go"
 )
 
-// CheckerModule adds Checker methods on PB
+// CheckerModule adds Checker methods on PB.
 type CheckerModule struct {
 	*pgs.ModuleBase
+
 	ctx               pgsgo.Context
 	strict            bool
 	missingValidation bool
 }
 
-// Checker returns an initialized CheckerPlugin
+// Checker returns an initialized CheckerPlugin.
 func Checker() *CheckerModule {
 	return &CheckerModule{
 		ModuleBase:        &pgs.ModuleBase{},
@@ -26,7 +28,7 @@ func Checker() *CheckerModule {
 	}
 }
 
-// InitContext populates the module with needed context and fields
+// InitContext populates the module with needed context and fields.
 func (c *CheckerModule) InitContext(b pgs.BuildContext) {
 	b.Debug("InitContext")
 	c.ModuleBase.InitContext(b)
@@ -36,8 +38,8 @@ func (c *CheckerModule) InitContext(b pgs.BuildContext) {
 // Name satisfies the generator.Plugin interface.
 func (c *CheckerModule) Name() string { return "Checker" }
 
-// Execute generates checking code for files
-func (c *CheckerModule) Execute(targets map[string]pgs.File, pkgs map[string]pgs.Package) []pgs.Artifact {
+// Execute generates checking code for files.
+func (c *CheckerModule) Execute(targets map[string]pgs.File, _ map[string]pgs.Package) []pgs.Artifact {
 	c.Debug("Execute")
 
 	if ok, _ := c.Parameters().Bool("strict"); ok {
@@ -65,12 +67,14 @@ func (c *CheckerModule) ExitCheck() {
 type checkVisitor struct {
 	pgs.Visitor
 	pgs.DebuggerCommon
+
 	missingValidation bool
 }
 
 func initCheckerVisitor(d pgs.DebuggerCommon) *checkVisitor {
 	v := &checkVisitor{DebuggerCommon: d}
 	v.Visitor = pgs.PassThroughVisitor(v)
+
 	return v
 }
 
@@ -82,9 +86,10 @@ func (v *checkVisitor) VisitFile(f pgs.File) (pgs.Visitor, error) {
 	if disabled {
 		v.Debugf("%v:%d: validation disabled on whole file. Reason: %v",
 			f.File().Name(),
-			f.SourceCodeInfo().Location().Span[0]+1,
+			f.SourceCodeInfo().Location().GetSpan()[0]+1,
 			reason,
 		)
+
 		return nil, nil
 	}
 
@@ -111,10 +116,11 @@ func (v *checkVisitor) VisitMessage(m pgs.Message) (pgs.Visitor, error) {
 	if disabled || ignored {
 		v.Debugf("%v:%d: validation disabled for message '%v'. Reason: %v",
 			m.File().Name(),
-			m.SourceCodeInfo().Location().Span[0]+1,
+			m.SourceCodeInfo().Location().GetSpan()[0]+1,
 			m.Name(),
 			reason,
 		)
+
 		return nil, nil
 	}
 
@@ -127,7 +133,7 @@ func (v *checkVisitor) VisitField(f pgs.Field) (pgs.Visitor, error) {
 	if ok && err == nil {
 		v.Debugf("%v:%d: validation rules defined for '%v' in message %v",
 			f.File().Name(),
-			f.SourceCodeInfo().Location().Span[0]+1,
+			f.SourceCodeInfo().Location().GetSpan()[0]+1,
 			f.Name(),
 			f.Message().Name(),
 		)
@@ -141,7 +147,7 @@ func (v *checkVisitor) VisitField(f pgs.Field) (pgs.Visitor, error) {
 	if disabled {
 		v.Debugf("%v:%d: validation disabled for field '%v' in message '%v'. Reason: %v",
 			f.File().Name(),
-			f.SourceCodeInfo().Location().Span[0]+1,
+			f.SourceCodeInfo().Location().GetSpan()[0]+1,
 			f.Name(),
 			f.Message().Name(),
 			reason,
@@ -152,7 +158,7 @@ func (v *checkVisitor) VisitField(f pgs.Field) (pgs.Visitor, error) {
 
 	v.Logf("%v:%d: no validation on field '%v' in message %v",
 		f.File().Name(),
-		f.SourceCodeInfo().Location().Span[0]+1,
+		f.SourceCodeInfo().Location().GetSpan()[0]+1,
 		f.Name(),
 		f.Message().Name(),
 	)
@@ -161,7 +167,7 @@ func (v *checkVisitor) VisitField(f pgs.Field) (pgs.Visitor, error) {
 	return nil, nil
 }
 
-// isValidationDisabled check if the validation is correctly disabled on given entity
+// isValidationDisabled check if the validation is correctly disabled on given entity.
 // Disabled validation without a proper reason is not considered valid.
 func (v *checkVisitor) isValidationDisabled(ok bool, disabled bool, e pgs.Entity, err error) (bool, string) {
 	if !ok || err != nil || !disabled {
@@ -172,7 +178,7 @@ func (v *checkVisitor) isValidationDisabled(ok bool, disabled bool, e pgs.Entity
 	if len(reason) == 0 {
 		v.Logf("%v:%d: no reason given for disabled validation on %v",
 			e.File().Name(),
-			e.SourceCodeInfo().Location().Span[0]+1,
+			e.SourceCodeInfo().Location().GetSpan()[0]+1,
 			e.Name(),
 		)
 		v.missingValidation = true
@@ -185,11 +191,11 @@ func (v *checkVisitor) isValidationDisabled(ok bool, disabled bool, e pgs.Entity
 
 const noValidationMarker = " No Validation Reason: "
 
-// getNoValidationReason extract the reason provided for the lack of validation
+// getNoValidationReason extract the reason provided for the lack of validation.
 func getNoValidationReason(comments string) string {
-	for _, comment := range strings.Split(comments, "\n") {
-		if strings.HasPrefix(comment, noValidationMarker) {
-			return strings.TrimPrefix(comment, noValidationMarker)
+	for comment := range strings.SplitSeq(comments, "\n") {
+		if rest, ok := strings.CutPrefix(comment, noValidationMarker); ok {
+			return rest
 		}
 	}
 

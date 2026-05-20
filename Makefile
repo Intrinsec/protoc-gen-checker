@@ -62,6 +62,21 @@ test: build
 		--$(NAME)_out=tests tests/*.proto
 
 
+.PHONY: lint
+lint:
+	@golangci-lint run ./...
+
+
+.PHONY: vuln
+vuln:
+	@govulncheck ./...
+
+
+.PHONY: unit
+unit:
+	@go test -mod=vendor ./... -count=1 -race
+
+
 .PHONY: clean
 clean:
 	@rm -fv tests/*.pb.go

@@ -6,7 +6,6 @@ import (
 )
 
 func main() {
-
 	checkerModule := Checker()
 
 	pgs.Init(pgs.DebugEnv("DEBUG_PG_CHECK")).
