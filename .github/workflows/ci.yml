@@ -9,8 +9,6 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    env:
-      GOFLAGS: -mod=vendor
     steps:
       - uses: actions/checkout@v6
 
@@ -29,8 +27,6 @@ jobs:
           fi
 
       - name: install golangci-lint
-        env:
-          GOFLAGS: ""
         run: |
           go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
@@ -39,8 +35,6 @@ jobs:
         run: golangci-lint run --timeout=5m .
 
       - name: govulncheck
-        env:
-          GOFLAGS: ""
         run: |
           go install golang.org/x/vuln/cmd/govulncheck@latest
           govulncheck ./...
