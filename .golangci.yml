@@ -1,6 +1,7 @@
 version: "2"
 run:
   tests: false
+  modules-download-mode: vendor
 linters:
   default: all
   disable:
