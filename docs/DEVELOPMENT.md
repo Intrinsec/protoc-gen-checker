@@ -100,8 +100,16 @@ Reachable Go stdlib findings clear after upgrading the system `go` toolchain.
 1. Bump dep versions if needed (`go get …@latest`; `go mod tidy`).
 2. `make lint && make vuln && make unit && make test` — last one expected to
    FAIL with the standard banner.
-3. Tag: `git tag v<MAJOR>.<MINOR>.<PATCH> && git push --tags`.
-4. CI builds and publishes the binary artifact for the tag.
+3. Tag: `git tag -a v<MAJOR>.<MINOR>.<PATCH> -m "Release v<...>" && git push origin v<...>`.
+4. The `.github/workflows/release.yml` workflow fires on `v*` tag push and
+   cross-compiles binaries for `linux/amd64`, `linux/arm64`, `darwin/arm64`,
+   computes `SHA256SUMS`, and uploads them to the GitHub release.
+
+To produce the binaries locally (e.g. dry-run before tagging):
+
+```sh
+make release   # writes dist/ with three binaries + SHA256SUMS
+```
 
 Signed releases / SBOM publication are not adopted yet (tier B). Add a plan
 under `docs/superpowers/plans/` when they become a requirement.
