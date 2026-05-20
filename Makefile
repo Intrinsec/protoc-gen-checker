@@ -64,7 +64,7 @@ test: build
 
 .PHONY: lint
 lint:
-	@golangci-lint run ./...
+	@golangci-lint run .
 
 
 .PHONY: vuln
