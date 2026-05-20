@@ -2,7 +2,7 @@ empty :=
 space := $(empty) $(empty)
 NAME := checker
 PACKAGE := github.com/intrinsec/protoc-gen-$(NAME)
-PROTOC_GEN_VALIDATE := 0.6.1
+PROTOC_GEN_VALIDATE := 1.3.3
 
 # protoc-gen-go parameters for properly generating the import path for PGV
 GO_IMPORT_SPACES := M$(NAME)/$(NAME).proto=${PACKAGE}/$(NAME),\
