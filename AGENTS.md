@@ -98,6 +98,15 @@ Iagen-dev skills relevant here: `lint-go`, `lint-go-config`, `govulncheck`,
   migration may be required if newer releases drop the old import path.
 - Renovate or Dependabot recommended (not blocking for tier B; add later).
 
+## Releases
+
+- Driver: `goreleaser` invoked from `.github/workflows/release.yml` on `v*` tag push.
+- Platforms: `linux/{amd64,arm64}`, `darwin/{amd64,arm64}`.
+- Artifacts per release: `.tar.gz` archives, raw binaries, `SHA256SUMS`,
+  `SHA256SUMS.sig` (cosign keyless OIDC), `sbom_<os>_<arch>.cdx.json`
+  (CycloneDX via syft).
+- Convention mirrors `Intrinsec/protoc-gen-sanitize`.
+
 ## Carve-outs
 
 | Section | Reason | Note |

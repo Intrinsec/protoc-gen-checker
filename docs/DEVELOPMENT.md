@@ -101,18 +101,23 @@ Reachable Go stdlib findings clear after upgrading the system `go` toolchain.
 2. `make lint && make vuln && make unit && make test` — last one expected to
    FAIL with the standard banner.
 3. Tag: `git tag -a v<MAJOR>.<MINOR>.<PATCH> -m "Release v<...>" && git push origin v<...>`.
-4. The `.github/workflows/release.yml` workflow fires on `v*` tag push and
-   cross-compiles binaries for `linux/amd64`, `linux/arm64`, `darwin/arm64`,
-   computes `SHA256SUMS`, and uploads them to the GitHub release.
+4. The `.github/workflows/release.yml` workflow fires on `v*` tag push and runs
+   goreleaser. It cross-compiles binaries for `linux/{amd64,arm64}` and
+   `darwin/{amd64,arm64}`, produces `.tar.gz` archives plus raw binaries,
+   generates a CycloneDX SBOM per archive via syft, writes a `SHA256SUMS`
+   file, signs it with cosign (keyless OIDC via the workflow's
+   `id-token: write` permission), and uploads everything to the GitHub
+   release.
 
-To produce the binaries locally (e.g. dry-run before tagging):
+To dry-run the release locally without pushing a tag:
 
 ```sh
-make release   # writes dist/ with three binaries + SHA256SUMS
+make release-snapshot   # runs `goreleaser release --snapshot --clean`
+make release-check      # validates .goreleaser.yaml
 ```
 
-Signed releases / SBOM publication are not adopted yet (tier B). Add a plan
-under `docs/superpowers/plans/` when they become a requirement.
+These require `goreleaser`, `cosign`, and `syft` on `$PATH`. Snapshot mode
+skips the cosign signing step.
 
 ## Common pitfalls
 

@@ -77,22 +77,13 @@ unit:
 	@go test ./... -count=1 -race
 
 
-RELEASE_TARGETS := linux/amd64 linux/arm64 darwin/arm64
-RELEASE_LDFLAGS := -s -w
+.PHONY: release-snapshot
+release-snapshot:
+	@goreleaser release --snapshot --clean
 
-.PHONY: release
-release:
-	@test -f $(NAME)/$(NAME).pb.go || { echo "missing $(NAME)/$(NAME).pb.go - run 'make install' first to regenerate"; exit 1; }
-	@rm -rf dist && mkdir -p dist
-	@for t in $(RELEASE_TARGETS); do \
-		goos=$${t%/*}; goarch=$${t#*/}; \
-		out=dist/protoc-gen-$(NAME)-$$goos-$$goarch; \
-		echo "build $$out"; \
-		GOOS=$$goos GOARCH=$$goarch CGO_ENABLED=0 \
-			go build -trimpath -ldflags='$(RELEASE_LDFLAGS)' -o $$out . || exit 1; \
-	done
-	@cd dist && sha256sum protoc-gen-$(NAME)-* > SHA256SUMS
-	@ls -la dist/
+.PHONY: release-check
+release-check:
+	@goreleaser check
 
 
 .PHONY: clean

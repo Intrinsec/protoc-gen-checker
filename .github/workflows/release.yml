@@ -7,12 +7,16 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  packages: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-go@v6
         with:
@@ -20,27 +24,15 @@ jobs:
           check-latest: true
           cache: true
 
-      - name: build cross-platform binaries
-        run: |
-          mkdir -p dist
-          for t in linux/amd64 linux/arm64 darwin/arm64; do
-            goos="${t%/*}"; goarch="${t#*/}"
-            out="dist/protoc-gen-checker-${goos}-${goarch}"
-            echo "build $out"
-            GOOS="$goos" GOARCH="$goarch" CGO_ENABLED=0 \
-              go build -trimpath -ldflags='-s -w' -o "$out" .
-          done
-          (cd dist && sha256sum protoc-gen-checker-* > SHA256SUMS)
-          ls -la dist/
+      - uses: sigstore/cosign-installer@v3
 
-      - name: publish release
+      - uses: anchore/sbom-action/download-syft@v0
+
+      - uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          tag="${GITHUB_REF##*/}"
-          gh release upload "$tag" \
-            dist/protoc-gen-checker-linux-amd64 \
-            dist/protoc-gen-checker-linux-arm64 \
-            dist/protoc-gen-checker-darwin-arm64 \
-            dist/SHA256SUMS \
-            --clobber
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COSIGN_EXPERIMENTAL: "1"
