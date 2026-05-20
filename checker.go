@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/envoyproxy/protoc-gen-validate/validate"
+	"github.com/intrinsec/protoc-gen-checker/checker"
 	pgs "github.com/lyft/protoc-gen-star"
 	pgsgo "github.com/lyft/protoc-gen-star/lang/go"
-	"github.com/intrinsec/protoc-gen-checker/checker"
 )
 
 // CheckerModule adds Checker methods on PB
