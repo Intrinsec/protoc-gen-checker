@@ -1,6 +1,6 @@
 module github.com/intrinsec/protoc-gen-checker
 
-go 1.17
+go 1.26
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v0.6.1
