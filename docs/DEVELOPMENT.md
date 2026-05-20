@@ -47,7 +47,7 @@ declared in `GO_IMPORT_SPACES`.
 ## Run unit tests
 
 ```sh
-make unit        # go test -mod=vendor ./... -count=1 -race
+make unit        # go test ./... -count=1 -race
 ```
 
 These cover pure-Go helpers in `checker.go` (`getNoValidationReason`). Visitor
@@ -97,7 +97,7 @@ Reachable Go stdlib findings clear after upgrading the system `go` toolchain.
 
 ## Release flow
 
-1. Bump dep versions if needed (`go get …@latest`; `go mod tidy`; `go mod vendor`).
+1. Bump dep versions if needed (`go get …@latest`; `go mod tidy`).
 2. `make lint && make vuln && make unit && make test` — last one expected to
    FAIL with the standard banner.
 3. Tag: `git tag v<MAJOR>.<MINOR>.<PATCH> && git push --tags`.
@@ -117,5 +117,5 @@ under `docs/superpowers/plans/` when they become a requirement.
   `vendor/`, and `third_party/`. If a new generator is added, append its
   output path regex to both `linters.exclusions.paths` and
   `formatters.exclusions.paths`.
-- **`vendor/` and `go.mod` out of sync.** Run `go mod tidy && go mod vendor`,
-  commit both.
+- **Vendor mode** is carved out (see `AGENTS.md`). Do not run `go mod vendor`
+  unless reinstating the carve-out — `vendor/` is in `.gitignore`.

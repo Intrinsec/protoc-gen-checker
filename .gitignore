@@ -2,3 +2,4 @@ bin/
 *.sanitize
 tests/pkg/
 proto/
+vendor/

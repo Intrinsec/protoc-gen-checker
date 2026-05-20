@@ -66,10 +66,12 @@ Iagen-dev skills relevant here: `lint-go`, `lint-go-config`, `govulncheck`,
 
 ## Vendoring
 
-- Required for tier B Go projects.
-- Mandatory: `vendor/` checked in, `go mod tidy && go mod vendor` clean.
-- CI builds with `-mod=vendor`.
-- Baseline (2026-05-20): not vendored. Correction plan vendors after dep refresh.
+- **Carved out** (see `## Carve-outs` below). Reason:
+  `replaced-by:go-module-cache`. `vendor/` was adopted on 2026-05-20 then
+  reverted the same day because golangci-lint's package loader in GitHub
+  Actions consistently failed to resolve vendored Go modules even though
+  the directory and `vendor/modules.txt` were correct. Builds run in the
+  default module mode against `go.sum`.
 
 ## CI pipeline
 
@@ -98,8 +100,9 @@ Iagen-dev skills relevant here: `lint-go`, `lint-go-config`, `govulncheck`,
 
 ## Carve-outs
 
-No standard sections were explicitly excluded during onboarding. All applicable
-mandatory sections for tier B Go CLI are being adopted.
+| Section | Reason | Note |
+|---------|--------|------|
+| Vendoring | replaced-by:go-module-cache | Adopted then reverted 2026-05-20. GitHub Actions golangci-lint loader could not resolve vendored packages despite valid `vendor/modules.txt`. Spent 8 CI runs investigating with no resolution. `go.sum` + module cache deemed sufficient for tier B reproducibility; switch back to vendor if the lint-action / go vendor bug is fixed upstream. |
 
 The following standard sections from larger tiers are **not applicable** to this
 project (no carve-out row needed — they don't apply to Go CLI tier B):

@@ -74,7 +74,7 @@ vuln:
 
 .PHONY: unit
 unit:
-	@go test -mod=vendor ./... -count=1 -race
+	@go test ./... -count=1 -race
 
 
 .PHONY: clean

@@ -33,8 +33,6 @@ jobs:
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
       - name: golangci-lint
-        env:
-          GOFLAGS: -mod=mod
         run: golangci-lint run --timeout=5m .
 
       - name: govulncheck
@@ -43,7 +41,7 @@ jobs:
           govulncheck ./...
 
       - name: go test
-        run: go test -mod=vendor ./... -count=1 -race
+        run: go test ./... -count=1 -race
 
       - name: go build
-        run: go build -mod=vendor ./...
+        run: go build ./...
