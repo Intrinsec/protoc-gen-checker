@@ -51,6 +51,14 @@ state against the baseline captured during onboarding on 2026-05-20.
 - gofmt -l .: `checker.go` was dirty — fixed in-flight (import grouping). Re-checked clean.
 - Notes: ran during onboard execution pass on 2026-05-20. Locks baseline before correction plans.
 
+### 2026-05-20 (after all correction plans applied)
+- golangci-lint: 0 issues (Standard preset, Δ 0)
+- govulncheck: 0 reachable, 3 imported / 5 module-level non-reachable (Δ -3 module-level via dep refresh; remaining are Go stdlib in go1.26.2, fixed by system Go bump)
+- go test: 1 package OK (`checker_test.go`, 7 subtests + 1 parent = 8 cases); 1 package no-tests (`checker/` generated pb)
+- go build -mod=vendor: ok
+- gofmt -l .: clean (vendor excluded by config)
+- Notes: completed exec of all onboarding plans. AGENTS.md, Makefile (lint/vuln/unit), .golangci.yml, .github/workflows/ci.yml, vendor/, docs/DEVELOPMENT.md all in place. PGS migrated to v2, PGV bumped to v1.3.3, Go toolchain to 1.26.
+
 ```
 ### YYYY-MM-DD
 - golangci-lint: <issues> (Δ <±N>)
