@@ -4,6 +4,8 @@ Protoc plugin to execute checks and rules.
 
 This project uses [protoc-gen-star](https://github.com/lyft/protoc-gen-star) to ease code generation.
 
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for build, test, and release instructions.
+
 ## How to use it
 
 See `./tests/incident.proto` for example on how to use it.
