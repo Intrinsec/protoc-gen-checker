@@ -23,7 +23,9 @@ type CheckerModule struct {
 // Checker returns an initialized CheckerPlugin.
 func Checker() *CheckerModule {
 	return &CheckerModule{
-		ModuleBase:        &pgs.ModuleBase{},
+		ModuleBase:        &pgs.ModuleBase{BuildContext: nil}, // set by InitContext
+		ctx:               nil,                                // set by InitContext
+		strict:            false,
 		missingValidation: false,
 	}
 }
@@ -72,7 +74,11 @@ type checkVisitor struct {
 }
 
 func initCheckerVisitor(d pgs.DebuggerCommon) *checkVisitor {
-	v := &checkVisitor{DebuggerCommon: d}
+	v := &checkVisitor{
+		Visitor:           nil, // set below, needs v
+		DebuggerCommon:    d,
+		missingValidation: false,
+	}
 	v.Visitor = pgs.PassThroughVisitor(v)
 
 	return v

@@ -14,24 +14,27 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7.0.0
         with:
-          go-version-file: go.mod
-          check-latest: true
+          go-version: "1.27.3"
           cache: true
 
-      - uses: sigstore/cosign-installer@v3
+      - uses: sigstore/cosign-installer@v4.1.2
+        with:
+          # cosign v3 drops `sign-blob --output-signature`; stay on v2 to keep
+          # the SHA256SUMS.sig artifact until the bundle-format migration.
+          cosign-release: v2.6.5
 
-      - uses: anchore/sbom-action/download-syft@v0
+      - uses: anchore/sbom-action/download-syft@v0.24.3
 
-      - uses: goreleaser/goreleaser-action@v6
+      - uses: goreleaser/goreleaser-action@v7.3.0
         with:
           distribution: goreleaser
-          version: latest
+          version: v2.18.3  # keep in sync with GORELEASER_VERSION in Makefile
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
