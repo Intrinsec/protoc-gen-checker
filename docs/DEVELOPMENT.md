@@ -4,11 +4,15 @@ Audience: contributors. Pair with `AGENTS.md` for the project rules.
 
 ## Toolchain
 
-- **Go:** latest stable (>= 1.26).
+- **Go:** `1.27.3`, pinned by the `go` directive in `go.mod` and by
+  `go-version` in `.github/workflows/*.yml`. Bump all three together.
 - **protoc:** any recent release that supports the protobuf descriptor APIs used
   by `protoc-gen-validate` v1.3.x and `lyft/protoc-gen-star/v2`.
-- **golangci-lint:** any v2.x. `make lint` uses the system binary.
-- **govulncheck:** any v1.x. `make vuln` uses the system binary.
+- **golangci-lint / govulncheck / goreleaser:** pinned in the `Makefile`
+  (`GOLANGCI_LINT_VERSION`, `GOVULNCHECK_VERSION`, `GORELEASER_VERSION`).
+  `make tools` installs golangci-lint + govulncheck into `bin/` (CI uses the
+  same target); `make tools-release` installs goreleaser.
+  `make lint` / `make vuln` use whichever binary is first on `$PATH`.
 
 ## One-time setup after clone
 
@@ -132,3 +136,12 @@ skips the cosign signing step.
   `formatters.exclusions.paths`.
 - **Vendor mode** is carved out (see `AGENTS.md`). Do not run `go mod vendor`
   unless reinstating the carve-out — `vendor/` is in `.gitignore`.
+- **Stale `bin/protoc-gen-go`.** `make build` does not rebuild it once present.
+  After bumping `google.golang.org/protobuf`, `rm bin/protoc-gen-go
+  checker/checker.pb.go` and re-run `make build` so the generated header
+  matches `go.mod`.
+- **`make tools-release` fails with `checksum mismatch` on
+  `github.com/anchore/go-macholibre`** when `GOPROXY=direct`: the zip rebuilt
+  from GitHub no longer matches `sum.golang.org`. Do not disable the checksum
+  database; install through the public proxy instead:
+  `GOPROXY=https://proxy.golang.org,direct make tools-release`.

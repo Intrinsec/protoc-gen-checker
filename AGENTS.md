@@ -12,7 +12,8 @@ Re-run `/isec-iagen_dev-update-project` to refresh against current iagen-dev rul
   Reports messages/fields with missing validation or validation disabled without a
   documented reason. Used by other Intrinsec services in their proto code-generation
   pipelines.
-- **Go toolchain:** latest stable Go (currently `1.26.x`). Bump alongside upstream.
+- **Go toolchain:** pinned to `1.27.3` (`go.mod` `go` directive + workflow
+  `go-version`). Bump alongside upstream.
 
 ## Language
 
@@ -80,7 +81,8 @@ Iagen-dev skills relevant here: `lint-go`, `lint-go-config`, `govulncheck`,
 - File: `.github/workflows/ci.yml` (to be generated; adapt `/gitlab-cicd-go`
   template).
 - Triggers: every push + PR to default branch.
-- Go matrix: pin to latest stable Go in workflow (`go-version: stable`).
+- Go version: pinned exactly in workflow `go-version`, matching `go.mod`.
+- Tool versions: pinned in `Makefile`, installed via `make tools`.
 
 ## Dev guide
 
